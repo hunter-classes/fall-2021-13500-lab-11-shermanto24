@@ -30,7 +30,7 @@ TEST_CASE("Profile: setDisplayName(name) tests")
   CHECK( pr2.getFullName() == "Random Name (@username)" );
 }
 
-//----------------- task A -----------------
+//----------------- task B -----------------
 
 Network nw;
 
@@ -67,4 +67,50 @@ TEST_CASE("publicFindID: users that DO NOT exist within the network")
   CHECK( nw.publicFindID("") == -1 );
   CHECK( nw.publicFindID("UPPERCASE2") == -1 );
   CHECK( nw.publicFindID("user_15") == -1 );
+}
+
+//----------------- task C -----------------
+
+Network nw2;
+
+TEST_CASE("follow: true cases")
+{
+  //adding users
+  nw2.addUser("mario", "Mario");
+  nw2.addUser("luigi", "Luigi");
+  nw2.addUser("yoshi", "Yoshi");
+
+  //checking if follow returns true
+  CHECK( nw2.follow("mario", "luigi") );
+  CHECK( nw2.follow("luigi", "mario") );
+  CHECK( nw2.follow("luigi", "yoshi") );
+  CHECK( nw2.follow("yoshi", "mario") );
+
+  //checking if the cells are true
+  CHECK( nw2.isFollowing("mario", "luigi") );
+  CHECK( nw2.isFollowing("luigi", "mario") );
+  CHECK( nw2.isFollowing("luigi", "yoshi") );
+  CHECK( nw2.isFollowing("yoshi", "mario") );
+}
+
+TEST_CASE("follow: false cases")
+{
+  //checking if follow returns false
+  CHECK( !nw2.follow("mario", "Nonexistent") );
+  CHECK( !nw2.follow("Nonexistent", "luigi") );
+  CHECK( !nw2.follow("impostor1", "impostor2") );
+
+  //invalid user(s)
+  //cells for these pairs of users do not exist,
+  //so isFollowing returns false
+  CHECK( !nw2.isFollowing("mario", "Nonexistent") );
+  CHECK( !nw2.isFollowing("Nonexistent", "luigi") );
+  CHECK( !nw2.isFollowing("impostor1", "impostor2") );
+
+  //checking that the cells that should be false are false
+  CHECK( !nw2.isFollowing("mario", "mario") );
+  CHECK( !nw2.isFollowing("mario", "yoshi") );
+  CHECK( !nw2.isFollowing("luigi", "luigi") );
+  CHECK( !nw2.isFollowing("yoshi", "luigi") );
+  CHECK( !nw2.isFollowing("yoshi", "yoshi") );
 }
